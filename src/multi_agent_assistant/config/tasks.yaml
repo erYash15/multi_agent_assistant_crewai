@@ -1,25 +1,15 @@
-# research_task:
-#   description: >
-#     Conduct a thorough research about {topic}
-#     Make sure you find any interesting and relevant information given
-#     the current year is {current_year}.
-#   expected_output: >
-#     A list with 10 bullet points of the most relevant information about {topic}
-#   agent: researcher
-
-# reporting_task:
-#   description: >
-#     Review the context you got and expand each topic into a full section for a report.
-#     Make sure the report is detailed and contains any and all relevant information.
-#   expected_output: >
-#     A fully fledged report with the main topics, each with a full section of information.
-#     Formatted as markdown without '```'
-#   agent: reporting_analyst
-
 size_curve_forecasting_task:
   description: >
-    Analyze size curve and popular size for different articles."
+    Analyze size curve forecasted and percent of each size expected to be sold.
   expected_output: >
-    Top 3 most popular sizes for article S42834 and what are its size curve.
+    Brief report details about size curve and popular size for different articles.
   agent: size_curve_forecasting_analyst
 
+execute_pipeline_task:
+  description: >
+    Trigger the execution of the pipeline.
+  expected_output: >
+    A status report indicating which pipeline was triggered, whether 
+    the execution was successful, and the timestamp of execution.
+  agent: >
+    mlops_expert

@@ -4,6 +4,8 @@ from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
 import os
 from src.multi_agent_assistant.tools.prediction_tool import PredictionTools
+from src.multi_agent_assistant.tools.pipeline_tool import JenkinsTriggerTool
+
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
@@ -24,12 +26,15 @@ class MultiAgentAssistant():
 
     # Set your OpenAI API key
     api_key = os.getenv("OPENAI_API_KEY")
+    jenkins_key = os.getenv("JENKINS_API_KEY")
     
     # Create the prediction tool
     pred_tool = PredictionTools(
         data_path="knowledge/ds_sizepro_output.csv",
         api_key=api_key
     )
+    
+    jenkins_tool = JenkinsTriggerTool(jenkins_key)
         
     @agent
     def size_curve_forecasting_analyst(self) -> Agent:
@@ -37,7 +42,15 @@ class MultiAgentAssistant():
             config=self.agents_config['size_curve_forecasting_analyst'],
             verbose=True,
             tools = [self.pred_tool],
-            allow_delegation=False
+            allow_delegation=True
+        )
+        
+    @agent
+    def mlops_expert(self) -> Agent:
+        return Agent(
+            config=self.agents_config['mlops_expert'],           
+            tools=[self.jenkins_tool],
+            verbose=True
         )
 
     # To learn more about structured task outputs,
@@ -49,6 +62,12 @@ class MultiAgentAssistant():
         return Task(
             config=self.tasks_config['size_curve_forecasting_task'], # type: ignore[index]
             # human_input=True,
+        )
+        
+    @task
+    def execute_pipeline_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['execute_pipeline_task'], # type: ignore[index]
         )
 
     @crew
