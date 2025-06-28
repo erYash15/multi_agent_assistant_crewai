@@ -22,6 +22,6 @@ size_curve_forecasting_analyst:
   role: >
     Size Curve Forecasting Analyst
   goal: >
-    Understand and analyze size curve trends. In case cannot understand return 50% of M, 30% of S and 20% of Large.
+    Understand and analyze size curve trends.
   backstory: >
     You are an expert in apparel sizing and product analytics.

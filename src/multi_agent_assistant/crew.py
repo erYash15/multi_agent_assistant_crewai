@@ -2,6 +2,8 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
+import os
+from src.multi_agent_assistant.tools.prediction_tool import PredictionTools
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
@@ -20,12 +22,22 @@ class MultiAgentAssistant():
     # If you would like to add tools to your agents, you can learn more about it here:
     # https://docs.crewai.com/concepts/agents#agent-tools
 
+    # Set your OpenAI API key
+    api_key = os.getenv("OPENAI_API_KEY")
+    
+    # Create the prediction tool
+    pred_tool = PredictionTools(
+        data_path="knowledge/ds_sizepro_output.csv",
+        api_key=api_key
+    )
         
     @agent
     def size_curve_forecasting_analyst(self) -> Agent:
         return Agent(
             config=self.agents_config['size_curve_forecasting_analyst'],
-            verbose=2
+            verbose=True,
+            tools = [self.pred_tool],
+            allow_delegation=False
         )
 
     # To learn more about structured task outputs,
@@ -36,6 +48,7 @@ class MultiAgentAssistant():
     def size_curve_forecasting_task(self) -> Task:
         return Task(
             config=self.tasks_config['size_curve_forecasting_task'], # type: ignore[index]
+            # human_input=True,
         )
 
     @crew
@@ -49,5 +62,6 @@ class MultiAgentAssistant():
             tasks=self.tasks, # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
+            memory=True
             # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
         )

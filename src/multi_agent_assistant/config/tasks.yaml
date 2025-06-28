@@ -18,7 +18,8 @@
 
 size_curve_forecasting_task:
   description: >
-    Analyze size curve distribution and popular size."
+    Analyze size curve and popular size for different articles."
   expected_output: >
-    A clear size ranking with explanation for article S42834.
+    Top 3 most popular sizes for article S42834 and what are its size curve.
+  agent: size_curve_forecasting_analyst
 
