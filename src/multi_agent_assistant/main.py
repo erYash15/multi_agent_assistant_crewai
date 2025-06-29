@@ -16,13 +16,13 @@ def run():
     """
     Run the crew.
     """
-    inputs = {
-        'initial_message': 'Trigger the Training Pipeline'
-    }
+    # inputs = {
+    #     'initial_message': 'Trigger the Training Pipeline'
+    # }
     
     try:
-        # MultiAgentAssistant().crew().kickoff()
-        MultiAgentAssistant().crew().kickoff(inputs=inputs)
+        MultiAgentAssistant().crew().kickoff()
+        # MultiAgentAssistant().crew().kickoff(inputs=inputs)
     except Exception as e:
         raise Exception(f"An error occurred while running the crew: {e}")
 

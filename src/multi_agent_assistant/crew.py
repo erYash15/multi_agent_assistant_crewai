@@ -42,7 +42,8 @@ class MultiAgentAssistant():
             config=self.agents_config['size_curve_forecasting_analyst'],
             verbose=True,
             tools = [self.pred_tool],
-            allow_delegation=True
+            allow_delegation=True,
+            max_iter = 5
         )
         
     @agent
@@ -50,7 +51,8 @@ class MultiAgentAssistant():
         return Agent(
             config=self.agents_config['mlops_expert'],           
             tools=[self.jenkins_tool],
-            verbose=True
+            verbose=True,
+            max_iter = 1
         )
 
     # To learn more about structured task outputs,
