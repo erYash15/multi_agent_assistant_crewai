@@ -7,8 +7,7 @@ from typing import Type, Optional, ClassVar
 from pydantic import BaseModel, Field, PrivateAttr
 import pandas as pd
 import logging
-
-
+import json
 
 class PredictionToolInput(BaseModel):
     argument: str = Field(
@@ -30,7 +29,8 @@ class PandasToolBaseClass:
             self.df,
             verbose=True,
             allow_dangerous_code=True,
-            extra_tools=[]
+            max_iterations=15,  # Prevent infinite retries
+            extra_tools=[],
         )
 
     def _setup_logging(self):
@@ -58,22 +58,16 @@ class PandasToolBaseClass:
 class PredictionTools(BaseTool):
     name: str = "Prediction Tool"
     description: str = (
-        """
-        Data Schema:
-        ------------
-        1. group_article (str): Unique product identifier (e.g. "S42834")
-        2. technical_size (str/numeric): Standardized size value (e.g. "M", "36", "9.5")
-        3. sizecurve (float): Percentage of total sales for this size (0-100)
-        4. local_size (str): Region-specific size designation
-        5. sizecurve_cluster (str): Grouping of similar size patterns
-        6. business_segments (str): Product category (e.g. "menswear", "footwear")
+    """
+    Size Distribution Prediction Tool
 
-        Business Rules:
-        ---------------
-        - Higher size_curve = more popular size
-        - Compare sizes within the same sizecurve_cluster for accurate analysis
-        - Regional preferences visible in local_size vs technical_size
-        """
+    A sophisticated tool for analyzing and predicting size distribution patterns from product data. 
+    This tool processes natural language queries about size distribution and returns detailed 
+    analytical results using pandas DataFrame operations powered by OpenAI's language model.
+
+    Key Features:
+    - Processes complete user sentences including article numbers (e.g., "What's the size distribution for article S42834?")
+    """ 
     )
     
     args_schema: Type[BaseModel] = PredictionToolInput
@@ -87,5 +81,30 @@ class PredictionTools(BaseTool):
         self._df = pd.read_csv(data_path)
         self._tool = PandasToolBaseClass(self._df, self.description, api_key)
 
-    def _run(self, argument: str) -> str:
-        return self._tool.pandas_tool(argument)
+    def _run(self, argument) -> str:
+        
+        query = f"""
+        Data Schema:
+        ------------
+        1. group_article (str): Unique product identifier (e.g. "S42834")
+        2. technical_size (str/numeric): Standardized size value of distribution of sizes (e.g. "M", "36", "9.5")
+        3. sizecurve (float): ratio of total sales for this size
+        4. local_size (str): Region-specific size designation
+        5. sizecurve_cluster (str): Grouping of similar size patterns
+        6. business_segments (str): Product category (e.g. "menswear", "footwear")
+        
+        Current Query: {str(argument)}
+
+        Business Rules:
+        ---------------
+        - Higher size_curve = more popular size
+        - Compare sizes within the same sizecurve_cluster for accurate analysis
+        - Regional preferences visible in local_size vs technical_size
+        """
+        
+        print("QUERY:", query)
+        
+        result = self._tool.pandas_tool(query)
+        return json.dumps({
+            "analysis": str(result),
+            })

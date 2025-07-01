@@ -27,6 +27,7 @@ class MultiAgentAssistant():
     # Set your OpenAI API key
     api_key = os.getenv("OPENAI_API_KEY")
     jenkins_key = os.getenv("JENKINS_API_KEY")
+    model = os.getenv("MODEL")
     
     # Create the prediction tool
     pred_tool = PredictionTools(
@@ -35,6 +36,16 @@ class MultiAgentAssistant():
     )
     
     jenkins_tool = JenkinsTriggerTool(jenkins_key)
+    
+    
+    def manager_agent(self) -> Agent:
+        return Agent(
+            config=self.agents_config['manager_agent'],
+            verbose=True,
+            allow_delegation=True,
+            max_iter=1
+        )
+    
         
     @agent
     def size_curve_forecasting_analyst(self) -> Agent:
@@ -42,8 +53,8 @@ class MultiAgentAssistant():
             config=self.agents_config['size_curve_forecasting_analyst'],
             verbose=True,
             tools = [self.pred_tool],
-            allow_delegation=True,
-            max_iter = 5
+            allow_delegation=False,
+            max_iter = 1
         )
         
     @agent
@@ -52,6 +63,7 @@ class MultiAgentAssistant():
             config=self.agents_config['mlops_expert'],           
             tools=[self.jenkins_tool],
             verbose=True,
+            allow_delegation=False,
             max_iter = 1
         )
 
@@ -60,17 +72,17 @@ class MultiAgentAssistant():
     # https://docs.crewai.com/concepts/tasks#overview-of-a-task
         
     @task
-    def size_curve_forecasting_task(self) -> Task:
+    def size_curve_analysis_task(self) -> Task:
         return Task(
-            config=self.tasks_config['size_curve_forecasting_task'], # type: ignore[index]
+            config=self.tasks_config['size_curve_analysis_task'], # type: ignore[index]
             # human_input=True,
         )
         
-    @task
-    def execute_pipeline_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['execute_pipeline_task'], # type: ignore[index]
-        )
+    # @task
+    # def trigger_pipeline_task(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config['trigger_pipeline_task'], # type: ignore[index]
+    #     )
 
     @crew
     def crew(self) -> Crew:
@@ -81,8 +93,10 @@ class MultiAgentAssistant():
         return Crew(
             agents=self.agents, # Automatically created by the @agent decorator
             tasks=self.tasks, # Automatically created by the @task decorator
-            process=Process.sequential,
             verbose=True,
-            memory=True
-            # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
+            memory=True,
+            process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
+            # manager_llm=self.model,
+            handle_parsing_errors=True,
+            manager_agent=self.manager_agent()
         )

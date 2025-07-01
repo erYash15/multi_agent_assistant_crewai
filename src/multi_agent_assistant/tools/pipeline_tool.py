@@ -15,7 +15,43 @@ class JenkinsTriggerInput(BaseModel):
 
 class JenkinsTriggerTool(BaseTool):
     name: str = "JenkinsTriggerTool"
-    description: str = "Trigger a Jenkins job for pipeline stages"
+    description: str = (
+    """
+    Jenkins Pipeline Trigger Tool
+
+    A tool for triggering specific stages in a Jenkins pipeline. This tool interfaces with Jenkins'
+    REST API to initiate jobs corresponding to different pipeline stages (preprocessing, training, 
+    postprocessing).
+
+    Features:
+    - Supports triggering of three pipeline stages: preprocessing, training, and postprocessing
+    - Uses Jenkins' REST API with basic authentication
+    - Provides detailed feedback on job triggering status
+    - Handles errors and exceptions gracefully
+
+    Usage:
+    1. Initialize the tool with Jenkins credentials:
+    
+    Input: `preprocessing`, `training`, or `postprocessing` (any one of these three)
+    
+    2. Trigger a pipeline stage by specifying one of:
+    - 'preprocessing'
+    - 'training'
+    - 'postprocessing'
+
+    Returns:
+    A string indicating success or failure, including:
+    - Success: Job name, status code (201), and timestamp
+    - Failure: Error details, status code, and response text
+    - Exception: Error message if request fails
+
+    Example Responses:
+    - Success: "✅ Jenkins job 'preprocessing-size-pro' triggered successfully! 201\nWed, 21 Feb 2024 15:30:45 GMT"
+    - Failure: "❌ Failed to trigger 'training-size-pro': 404\nJob not found\nWed, 21 Feb 2024 15:31:22 GMT"
+    - Exception: "❌ Exception triggering 'postprocessing-size-pro': Connection timed out"
+    """
+    )
+    
     args_schema: Type[BaseModel] = JenkinsTriggerInput
 
     _JENKINS_URL: str = PrivateAttr()

@@ -1,15 +1,30 @@
-size_curve_forecasting_task:
+size_curve_analysis_task:
   description: >
-    Analyze size curve forecasted and percent of each size expected to be sold.
+    Analyze the output of a size curve forecasting model to interpret how different apparel sizes 
+    are expected to sell over a given horizon. This task involves parsing the output data, 
+    calculating the percentage share of each size given by sizecurve, and identifying which sizes are expected 
+    to be the most and least popular across different articles.
+    
+    The purpose of this task is to help business stakeholders make better inventory, assortment,
+    and pricing decisions based on anticipated customer demand by size. 
+
+    This task requires help of Prediction tools which takes entire user query or sentence as the input containing article number.
+
   expected_output: >
-    Brief report details about size curve and popular size for different articles.
+    Return exact output from the tool
   agent: size_curve_forecasting_analyst
 
-execute_pipeline_task:
+trigger_pipeline_task:
   description: >
-    Trigger the execution of the pipeline.
+    Executes a pipeline. The pipeline are for three types preprocessing, training and postprocessing.
+    The main responsibility here is to ensure the correct execution of the pipeline stages using a tool such as Jenkins.
+    Jenkins tool take only arguments like 'preprocessing', 'training' and 'postprocessing' as input. 
   expected_output: >
-    A status report indicating which pipeline was triggered, whether 
-    the execution was successful, and the timestamp of execution.
-  agent: >
-    mlops_expert
+    A status report including:
+    - Name of the triggered pipeline
+    - Timestamp of execution
+    - Status (Success/Failure)
+    - Error logs or messages if applicable
+  agent: mlops_expert
+
+  
