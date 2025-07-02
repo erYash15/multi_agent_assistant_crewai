@@ -5,6 +5,7 @@ from typing import List
 import os
 from src.multi_agent_assistant.tools.prediction_tool import PredictionTools
 from src.multi_agent_assistant.tools.pipeline_tool import JenkinsTriggerTool
+from langchain.llms import OpenAI
 
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
@@ -37,35 +38,36 @@ class MultiAgentAssistant():
     
     jenkins_tool = JenkinsTriggerTool(jenkins_key)
     
-    
+    @agent
     def manager_agent(self) -> Agent:
         return Agent(
             config=self.agents_config['manager_agent'],
             verbose=True,
+            tools = [self.pred_tool, self.jenkins_tool],
             allow_delegation=True,
             max_iter=1
         )
     
         
-    @agent
-    def size_curve_forecasting_analyst(self) -> Agent:
-        return Agent(
-            config=self.agents_config['size_curve_forecasting_analyst'],
-            verbose=True,
-            tools = [self.pred_tool],
-            allow_delegation=False,
-            max_iter = 1
-        )
+    # @agent
+    # def size_curve_forecasting_analyst(self) -> Agent:
+    #     return Agent(
+    #         config=self.agents_config['size_curve_forecasting_analyst'],
+    #         verbose=True,
+    #         tools = [self.pred_tool],
+    #         allow_delegation=False,
+    #         max_iter = 1
+    #     )
         
-    @agent
-    def mlops_expert(self) -> Agent:
-        return Agent(
-            config=self.agents_config['mlops_expert'],           
-            tools=[self.jenkins_tool],
-            verbose=True,
-            allow_delegation=False,
-            max_iter = 1
-        )
+    # @agent
+    # def mlops_expert(self) -> Agent:
+    #     return Agent(
+    #         config=self.agents_config['mlops_expert'],           
+    #         tools=[self.jenins_tool],
+    #         verbose=True,
+    #         allow_delegation=False,
+    #         max_iter = 1
+    #     )
 
     # To learn more about structured task outputs,
     # task dependencies, and task callbacks, check out the documentation:
@@ -78,7 +80,7 @@ class MultiAgentAssistant():
             # human_input=True,
         )
         
-    # @task
+    # # @task
     # def trigger_pipeline_task(self) -> Task:
     #     return Task(
     #         config=self.tasks_config['trigger_pipeline_task'], # type: ignore[index]
@@ -95,8 +97,11 @@ class MultiAgentAssistant():
             tasks=self.tasks, # Automatically created by the @task decorator
             verbose=True,
             memory=True,
-            process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
-            # manager_llm=self.model,
-            handle_parsing_errors=True,
-            manager_agent=self.manager_agent()
+            process=Process.sequential,
+            # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
+            manager_llm=self.model,
+            # handle_parsing_errors=True,
+            # manager_agent=self.manager_agent()
         )
+        
+    

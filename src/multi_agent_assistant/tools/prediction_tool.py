@@ -12,7 +12,7 @@ import json
 class PredictionToolInput(BaseModel):
     argument: str = Field(
         ...,
-        description="User's natural language query related to size distribution"
+        description="User's query related to size distribution"
     )
 
 class PandasToolBaseClass:
@@ -60,13 +60,9 @@ class PredictionTools(BaseTool):
     description: str = (
     """
     Size Distribution Prediction Tool
-
-    A sophisticated tool for analyzing and predicting size distribution patterns from product data. 
     This tool processes natural language queries about size distribution and returns detailed 
     analytical results using pandas DataFrame operations powered by OpenAI's language model.
-
-    Key Features:
-    - Processes complete user sentences including article numbers (e.g., "What's the size distribution for article S42834?")
+    - Processes complete user sentences including article numbers
     """ 
     )
     
@@ -102,9 +98,10 @@ class PredictionTools(BaseTool):
         - Regional preferences visible in local_size vs technical_size
         """
         
-        print("QUERY:", query)
+        # print("QUERY:", query)
         
         result = self._tool.pandas_tool(query)
-        return json.dumps({
-            "analysis": str(result),
-            })
+        # return json.dumps({
+        # "analysis": str(result),
+        # })
+        return str(result)

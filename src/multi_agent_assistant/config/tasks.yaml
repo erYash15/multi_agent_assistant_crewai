@@ -12,7 +12,7 @@ size_curve_analysis_task:
 
   expected_output: >
     Return exact output from the tool
-  agent: size_curve_forecasting_analyst
+  agent: manager_agent
 
 trigger_pipeline_task:
   description: >
@@ -25,6 +25,6 @@ trigger_pipeline_task:
     - Timestamp of execution
     - Status (Success/Failure)
     - Error logs or messages if applicable
-  agent: mlops_expert
+  agent: manager_agent
 
   
