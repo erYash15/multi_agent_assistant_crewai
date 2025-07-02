@@ -5,7 +5,7 @@ from typing import List
 import os
 from src.multi_agent_assistant.tools.prediction_tool import PredictionTools
 from src.multi_agent_assistant.tools.pipeline_tool import JenkinsTriggerTool
-from langchain.llms import OpenAI
+# from langchain.llms import OpenAI
 
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
@@ -73,18 +73,18 @@ class MultiAgentAssistant():
     # task dependencies, and task callbacks, check out the documentation:
     # https://docs.crewai.com/concepts/tasks#overview-of-a-task
         
-    @task
-    def size_curve_analysis_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['size_curve_analysis_task'], # type: ignore[index]
-            # human_input=True,
-        )
-        
-    # # @task
-    # def trigger_pipeline_task(self) -> Task:
+    # @task
+    # def size_curve_analysis_task(self) -> Task:
     #     return Task(
-    #         config=self.tasks_config['trigger_pipeline_task'], # type: ignore[index]
+    #         config=self.tasks_config['size_curve_analysis_task'], # type: ignore[index]
+    #         # human_input=True,
     #     )
+        
+    @task
+    def trigger_pipeline_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['trigger_pipeline_task'], # type: ignore[index]
+        )
 
     @crew
     def crew(self) -> Crew:
