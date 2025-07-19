@@ -4,7 +4,7 @@ Welcome to the MultiAgentAssistant Crew project, powered by [crewAI](https://cre
 
 ## Demo
 
-![Demo](https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExa240OG91N3BvbmIxNXZ1YW85bnZpOHNkNDIzYjFoa3kwa3UyN3FleCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/NpBfnUPvxXHiTJGB7B/giphy.gif)
+![Demo](animated.gif)
 
 ## Key Features
 
